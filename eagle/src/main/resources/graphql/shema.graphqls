@@ -1,0 +1,13 @@
+input UserModel{
+    id:Int
+    email:String
+    password:String
+    role:String
+    activeStatus:String
+    creationDate:String
+}
+
+input GeneralResponseModel{
+    responseMessage:String
+    responseStatus:Boolean
+}
