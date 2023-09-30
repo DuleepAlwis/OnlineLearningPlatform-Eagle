@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.olp.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -22,17 +21,20 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JWTTokenHelper {
 
+
     @Value("${jwt.auth.app}")
-    private String appName;
+    private String appName = "EagleLearningPlatform-Api";
 
-    @Value("${jwt.auth.secret_key}")
-    private String secretKey;
+    @Value("${jwt.auth.secret}")
+    private String secretKey = "dsf5sd454gdfg5df4g5df4ggdf55443";
 
-    @Value("${jwt.auth.expires_in}")
-    private int expiresIn;
+    @Value("${jwt.auth.expire}")
+    private int expiresIn = 50000;
 
 
+    public JWTTokenHelper(){
 
+    }
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
 
@@ -43,7 +45,6 @@ public class JWTTokenHelper {
 
     private Claims getAllClaimsFromToken(String token) {
         Claims claims = null;
-
         try {
             if(token!=null && !token.equals("")) {
                 claims = Jwts.parser()
@@ -82,6 +83,8 @@ public class JWTTokenHelper {
 
 
     public String generateToken(UserEntity userEntity) throws InvalidKeySpecException, NoSuchAlgorithmException {
+
+
 
         return Jwts.builder()
                 .setIssuer(appName)

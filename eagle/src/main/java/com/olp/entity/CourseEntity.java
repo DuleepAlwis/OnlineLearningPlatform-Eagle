@@ -34,6 +34,18 @@ public class CourseEntity {
    @OneToMany(mappedBy="tutorCourse")
     private List<TutorCourseEntity> tutors;
 
+    @OneToMany(mappedBy = "course")
+    private List<CourseContent> content;
+
+    public List<CourseContent> getContent() {
+        return content;
+    }
+
+    public void setContent(List<CourseContent> content) {
+        this.content = content;
+    }
+
+
     public CourseEntity() {
     }
 

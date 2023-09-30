@@ -1,11 +1,126 @@
 package com.olp.controller;
 
+import com.olp.config.auth.JWTTokenHelper;
+import com.olp.constants.ResponseMessage;
+import com.olp.constants.Role;
+import com.olp.entity.UserEntity;
+import com.olp.model.GeneralResponseModel;
+import com.olp.model.LoginResponseModel;
+import com.olp.model.UserModel;
+import com.olp.repository.UserRepository;
+import com.olp.utility.CommonUtitlity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@Controller
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
+
 @CrossOrigin()
+@Controller
 public class UserController {
 
+    static Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @QueryMapping
+    LoginResponseModel login(@Argument String email, @Argument String password) {
+
+        LoginResponseModel loginResponseModel = new LoginResponseModel();
+        UserEntity ue = userRepository.findByEmailAndActiveStatus(email,"Y");
+        if(ue!=null){
+            boolean passwordMatches = CommonUtitlity.passwordComparator(password,ue.getPassword());
+            if(passwordMatches){
+                JWTTokenHelper jwt = new JWTTokenHelper();
+                try {
+                    String token = jwt.generateToken(ue);
+                    loginResponseModel.setToken(token);
+                    loginResponseModel.setResponseMessage(ResponseMessage.AUTHENTICATION_SUCCESS);
+                    loginResponseModel.setResponseStatus(true);
+                } catch (InvalidKeySpecException e) {
+                   logger.info(e.getMessage());
+                   loginResponseModel.setResponseMessage(e.getMessage());
+                   loginResponseModel.setResponseStatus(false);
+                } catch (NoSuchAlgorithmException e) {
+                    logger.info(e.getMessage());
+                    loginResponseModel.setResponseStatus(false);
+                    loginResponseModel.setResponseMessage(e.getMessage());
+                }
+            }else{
+                loginResponseModel.setResponseMessage(ResponseMessage.INVALID_EMAIL_PASSWORD);
+                loginResponseModel.setResponseStatus(false);
+            }
+        }else{
+            loginResponseModel.setResponseMessage(ResponseMessage.INVALID_EMAIL_PASSWORD);
+            loginResponseModel.setResponseStatus(false);
+        }
+        return loginResponseModel;
+    }
+
+    @MutationMapping
+    public GeneralResponseModel createUser(@Argument UserModel user){
+
+        GeneralResponseModel generalResponseModel = new GeneralResponseModel();
+        UserEntity ue = new UserEntity();
+        ue.setActiveStatus("Y");
+        ue.setCreationDate(new Date());
+        if(user.getRole().equals(Role.ADMIN)){
+            ue.setRole(Role.ADMIN.ordinal());
+        }else if(user.getRole().equals(Role.STUDENT)){
+            ue.setRole(Role.STUDENT.ordinal());
+        }else if(user.getRole().equals(Role.TUTOR)){
+            ue.setRole(Role.TUTOR.ordinal());
+        }
+        ue.setEmail(user.getEmail());
+        ue.setPassword(CommonUtitlity.hashPassword(user.getPassword()));
+        ue.setUsername(user.getUserName());
+        if(userRepository.save(ue)!=null){
+            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_SUCCESS);
+            generalResponseModel.setResponseStatus(true);
+        }else{
+            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_FAILED);
+            generalResponseModel.setResponseStatus(false);
+        }
+        return generalResponseModel;
+    }
+
+    @MutationMapping
+    public GeneralResponseModel changePassword(@Argument Long userId,@Argument String password){
+        GeneralResponseModel generalResponseModel = new GeneralResponseModel();
+        UserEntity ue =  this.userRepository.getUserById(userId);
+        ue.setPassword(CommonUtitlity.hashPassword(password));
+        if(this.userRepository.save(ue)!=null){
+            generalResponseModel.setResponseMessage(ResponseMessage.RESET_PW_SUCCESS);
+            generalResponseModel.setResponseStatus(true);
+        }else{
+            generalResponseModel.setResponseMessage(ResponseMessage.RESET_PW_FAILED);
+            generalResponseModel.setResponseStatus(false);
+        }
+        return generalResponseModel;
+    }
+
+    @MutationMapping
+    public GeneralResponseModel updateUser(@Argument UserModel user){
+        GeneralResponseModel generalResponseModel = new GeneralResponseModel();
+        UserEntity ue = userRepository.getUserById(user.getId());
+        ue.setUsername(user.getUserName());
+        ue.setEmail(user.getEmail());
+        if(userRepository.save(ue)!=null){
+            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_DATA_UPDATION_SUCCESS);
+            generalResponseModel.setResponseStatus(true);
+        }else{
+            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_DATA_UPDATION_FAILED);
+            generalResponseModel.setResponseStatus(true);
+        }
+        return generalResponseModel;
+    }
 }

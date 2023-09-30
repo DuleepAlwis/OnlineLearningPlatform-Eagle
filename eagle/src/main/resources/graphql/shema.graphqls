@@ -1,3 +1,13 @@
+type Query{
+
+    login(email:String,password:String):LoginResponseModel
+}
+type Mutation{
+    createUser(user: UserModel): GeneralResponseModel
+    changePassword(userId:Int,password:String):GeneralResponseModel
+    updateUser(user:UserModel):GeneralResponseModel
+}
+
 input UserModel{
     id:Int
     email:String
@@ -5,9 +15,16 @@ input UserModel{
     role:String
     activeStatus:String
     creationDate:String
+    userName:String
 }
 
-input GeneralResponseModel{
+type GeneralResponseModel{
     responseMessage:String
     responseStatus:Boolean
+}
+
+type LoginResponseModel{
+    responseMessage:String
+    responseStatus:Boolean
+    token:String
 }

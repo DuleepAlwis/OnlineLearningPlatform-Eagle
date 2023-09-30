@@ -8,7 +8,8 @@ public class UserModel {
     private String email;
     private String password;
 
-    private int role;
+    private String userName;
+    private String role;
 
     private String activeStatus;
 
@@ -22,8 +23,9 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(long id, String email, String password, int role, String activeStatus, Date creationDate, TutorModel userTutor, StudentModel userStudent) {
+    public UserModel(long id, String userName,String email, String password, String role, String activeStatus, Date creationDate, TutorModel userTutor, StudentModel userStudent) {
         this.id = id;
+        this.userName = userName;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -39,6 +41,14 @@ public class UserModel {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setUserName(String userName){
+        this.userName = userName;
+    }
+
+    public String getUserName(){
+        return this.userName;
     }
 
     public String getEmail() {
@@ -57,11 +67,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public int getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(int role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -101,6 +111,7 @@ public class UserModel {
     public String toString() {
         return "UserModel{" +
                 "id=" + id +
+                "userName="+userName+'\''+
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +

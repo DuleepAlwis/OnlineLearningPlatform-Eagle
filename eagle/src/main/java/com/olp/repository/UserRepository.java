@@ -8,4 +8,7 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query(value="Select * from user_tb where email=?1 and active_status=?2", nativeQuery = true)
     public UserEntity findByEmailAndActiveStatus(String email,String activeStatus);
+
+    @Query(value="Select * from user_tb where id=?1",nativeQuery = true)
+    public UserEntity getUserById(long id);
 }
