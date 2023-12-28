@@ -6,24 +6,21 @@ import com.olp.constants.Role;
 import com.olp.entity.UserEntity;
 import com.olp.model.GeneralResponseModel;
 import com.olp.model.LoginResponseModel;
-import com.olp.model.UserModel;
+import com.olp.model.UserLoginModel;
 import com.olp.repository.UserRepository;
 import com.olp.utility.CommonUtitlity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 
-@CrossOrigin()
+//@CrossOrigin(origins = "http://localhost:3000")
 @Controller
 public class UserController {
 
@@ -32,11 +29,12 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @QueryMapping
+    @MutationMapping
     LoginResponseModel login(@Argument String email, @Argument String password) {
 
         LoginResponseModel loginResponseModel = new LoginResponseModel();
         UserEntity ue = userRepository.findByEmailAndActiveStatus(email,"Y");
+        UserLoginModel userModel = new UserLoginModel();
         if(ue!=null){
             boolean passwordMatches = CommonUtitlity.passwordComparator(password,ue.getPassword());
             if(passwordMatches){
@@ -45,40 +43,57 @@ public class UserController {
                     String token = jwt.generateToken(ue);
                     loginResponseModel.setToken(token);
                     loginResponseModel.setResponseMessage(ResponseMessage.AUTHENTICATION_SUCCESS);
+
                     loginResponseModel.setResponseStatus(true);
+                    switch (ue.getRole()){
+                        case  ADMIN:userModel.setRole(Role.ADMIN.getRole());break;
+                        case STUDENT:userModel.setRole(Role.STUDENT.getRole());break;
+                        case TUTOR:userModel.setRole(Role.TUTOR.getRole());break;
+                    }
+                    userModel.setUserName(ue.getUsername());
+                    userModel.setEmail(ue.getEmail());
+                    userModel.setCreationDate(ue.getCreationDate());
+                    userModel.setId(ue.getId());
+                    userModel.setActiveStatus(ue.getActiveStatus());
+                    loginResponseModel.setUserLoginModel(userModel);
+                    logger.info("User entity {}",loginResponseModel.getUserLoginModel().toString());
                 } catch (InvalidKeySpecException e) {
-                   logger.info(e.getMessage());
+                   logger.info("Error {}",e.getMessage());
                    loginResponseModel.setResponseMessage(e.getMessage());
                    loginResponseModel.setResponseStatus(false);
+
                 } catch (NoSuchAlgorithmException e) {
-                    logger.info(e.getMessage());
+                    logger.info("Error {}",e.getMessage());
                     loginResponseModel.setResponseStatus(false);
                     loginResponseModel.setResponseMessage(e.getMessage());
+
                 }
             }else{
                 loginResponseModel.setResponseMessage(ResponseMessage.INVALID_EMAIL_PASSWORD);
                 loginResponseModel.setResponseStatus(false);
+
             }
         }else{
             loginResponseModel.setResponseMessage(ResponseMessage.INVALID_EMAIL_PASSWORD);
             loginResponseModel.setResponseStatus(false);
+
         }
         return loginResponseModel;
     }
 
     @MutationMapping
-    public GeneralResponseModel createUser(@Argument UserModel user){
+    public GeneralResponseModel createUser(@Argument UserLoginModel user){
 
         GeneralResponseModel generalResponseModel = new GeneralResponseModel();
         UserEntity ue = new UserEntity();
         ue.setActiveStatus("Y");
         ue.setCreationDate(new Date());
-        if(user.getRole().equals(Role.ADMIN)){
-            ue.setRole(Role.ADMIN.ordinal());
-        }else if(user.getRole().equals(Role.STUDENT)){
-            ue.setRole(Role.STUDENT.ordinal());
-        }else if(user.getRole().equals(Role.TUTOR)){
-            ue.setRole(Role.TUTOR.ordinal());
+        if(user.getRole().equals(Role.ADMIN.getRole())){
+            ue.setRole(Role.ADMIN);
+        }else if(user.getRole().equals(Role.STUDENT.getRole())){
+            ue.setRole(Role.STUDENT);
+        }else if(user.getRole().equals(Role.TUTOR.getRole())){
+            ue.setRole(Role.TUTOR);
         }
         ue.setEmail(user.getEmail());
         ue.setPassword(CommonUtitlity.hashPassword(user.getPassword()));
@@ -109,7 +124,7 @@ public class UserController {
     }
 
     @MutationMapping
-    public GeneralResponseModel updateUser(@Argument UserModel user){
+    public GeneralResponseModel updateUser(@Argument UserLoginModel user){
         GeneralResponseModel generalResponseModel = new GeneralResponseModel();
         UserEntity ue = userRepository.getUserById(user.getId());
         ue.setUsername(user.getUserName());

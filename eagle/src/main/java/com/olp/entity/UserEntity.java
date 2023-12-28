@@ -1,6 +1,9 @@
 package com.olp.entity;
 
 import javax.persistence.*;
+
+import com.olp.constants.Role;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,6 +12,7 @@ import java.util.Collection;
 
 @Table(name="user_tb")
 @Entity
+@Data
 public class UserEntity implements UserDetails {
 
     @Id
@@ -26,7 +30,7 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @Column(name="role")
-    private int role;
+    private Role role;
 
     @Column(name="active_status")
     private String activeStatus;
@@ -75,85 +79,6 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return activeStatus.equals(("Y"));
-    }
-
-    public UserEntity() {
-    }
-
-    public UserEntity(long id, String username, String email, String password, int role, String activeStatus, Date creationDate, TutorEntity userTutor, StudentEntity userStudent) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.activeStatus = activeStatus;
-        this.creationDate = creationDate;
-        this.userTutor = userTutor;
-        this.userStudent = userStudent;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
-
-    public String getActiveStatus() {
-        return activeStatus;
-    }
-
-    public void setActiveStatus(String activeStatus) {
-        this.activeStatus = activeStatus;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public TutorEntity getUserTutor() {
-        return userTutor;
-    }
-
-    public void setUserTutor(TutorEntity userTutor) {
-        this.userTutor = userTutor;
-    }
-
-    public StudentEntity getUserStudent() {
-        return userStudent;
-    }
-
-    public void setUserStudent(StudentEntity userStudent) {
-        this.userStudent = userStudent;
     }
 
     @Override

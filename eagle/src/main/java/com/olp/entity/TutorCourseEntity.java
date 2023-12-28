@@ -1,11 +1,14 @@
 package com.olp.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Table(name="tutor_course_tb")
 @Entity
+@Data
 public class TutorCourseEntity {
 
     //# id, course_id, tutor_id
@@ -25,47 +28,6 @@ public class TutorCourseEntity {
     @Column(name="joined_date")
     private Date joinedDate;
 
-    public TutorCourseEntity() {
-    }
-
-    public TutorCourseEntity(long id, TutorEntity tutor, CourseEntity tutorCourse, Date joinedDate) {
-        this.id = id;
-        this.tutor = tutor;
-        this.tutorCourse = tutorCourse;
-        this.joinedDate = joinedDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public TutorEntity getTutor() {
-        return tutor;
-    }
-
-    public void setTutor(TutorEntity tutor) {
-        this.tutor = tutor;
-    }
-
-    public CourseEntity getTutorCourse() {
-        return tutorCourse;
-    }
-
-    public void setTutorCourse(CourseEntity tutorCourse) {
-        this.tutorCourse = tutorCourse;
-    }
-
-    public Date getJoinedDate() {
-        return joinedDate;
-    }
-
-    public void setJoinedDate(Date joinedDate) {
-        this.joinedDate = joinedDate;
-    }
 
     @Override
     public String toString() {

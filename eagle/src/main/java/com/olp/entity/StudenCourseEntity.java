@@ -1,11 +1,14 @@
 package com.olp.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Table(name="student_course_tb")
 @Entity
+@Data
 public class StudenCourseEntity {
 
     //# id, student_id, tutor_course_id,enrolled_date
@@ -26,47 +29,6 @@ public class StudenCourseEntity {
     @Column(name="enrolled_date")
     private Date enrolledDate;
 
-    public StudenCourseEntity() {
-    }
-
-    public StudenCourseEntity(long id, StudentEntity student, CourseEntity stCourse, Date enrolledDate) {
-        this.id = id;
-        this.student = student;
-        this.stCourse = stCourse;
-        this.enrolledDate = enrolledDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public StudentEntity getStudent() {
-        return student;
-    }
-
-    public void setStudent(StudentEntity student) {
-        this.student = student;
-    }
-
-    public CourseEntity getStCourse() {
-        return stCourse;
-    }
-
-    public void setStCourse(CourseEntity stCourse) {
-        this.stCourse = stCourse;
-    }
-
-    public Date getEnrolledDate() {
-        return enrolledDate;
-    }
-
-    public void setEnrolledDate(Date enrolledDate) {
-        this.enrolledDate = enrolledDate;
-    }
 
     @Override
     public String toString() {

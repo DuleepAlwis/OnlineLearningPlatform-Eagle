@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-@CrossOrigin()
+/*@CrossOrigin()
 @RestController
 @RequestMapping(value="/api/user")
 public class UserRestController {
@@ -30,7 +30,7 @@ public class UserRestController {
     LoginResponseModel login(@RequestBody LoginModel creds) {
 
         LoginResponseModel loginResponseModel = new LoginResponseModel();
-        UserEntity ue = userRepository.findByEmailAndActiveStatus(creds.getEmail(),"Y");
+        UserEntity ue = null;//userRepository.findByEmailAndActiveStatus(creds.getEmail(),"Y");
         if(ue!=null){
             boolean passwordMatches = CommonUtitlity.passwordComparator(creds.getPassword(),ue.getPassword());
             if(passwordMatches){
@@ -60,4 +60,4 @@ public class UserRestController {
         return loginResponseModel;
     }
 
-}
+}*/
