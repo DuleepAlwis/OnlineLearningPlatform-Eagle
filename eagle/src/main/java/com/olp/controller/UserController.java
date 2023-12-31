@@ -98,13 +98,19 @@ public class UserController {
         ue.setEmail(user.getEmail());
         ue.setPassword(CommonUtitlity.hashPassword(user.getPassword()));
         ue.setUsername(user.getUserName());
-        if(userRepository.save(ue)!=null){
-            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_SUCCESS);
-            generalResponseModel.setResponseStatus(true);
-        }else{
-            generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_FAILED);
+        try{
+            if(userRepository.save(ue)!=null){
+                generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_SUCCESS);
+                generalResponseModel.setResponseStatus(true);
+            }else{
+                generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_FAILED);
+                generalResponseModel.setResponseStatus(false);
+            }
+        }catch (Exception ex){
+            generalResponseModel.setResponseMessage(ex.getMessage());
             generalResponseModel.setResponseStatus(false);
         }
+
         return generalResponseModel;
     }
 
