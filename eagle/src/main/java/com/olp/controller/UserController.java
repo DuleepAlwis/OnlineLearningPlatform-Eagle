@@ -8,6 +8,7 @@ import com.olp.model.GeneralResponseModel;
 import com.olp.model.LoginResponseModel;
 import com.olp.model.UserLoginModel;
 import com.olp.repository.UserRepository;
+import com.olp.service.UserService;
 import com.olp.utility.CommonUtitlity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +28,13 @@ public class UserController {
     static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @MutationMapping
     LoginResponseModel login(@Argument String email, @Argument String password) {
 
         LoginResponseModel loginResponseModel = new LoginResponseModel();
-        UserEntity ue = userRepository.findByEmailAndActiveStatus(email,"Y");
+        UserEntity ue = userService.findByEmailAndActiveStatus(email,"Y");
         UserLoginModel userModel = new UserLoginModel();
         if(ue!=null){
             boolean passwordMatches = CommonUtitlity.passwordComparator(password,ue.getPassword());
@@ -99,7 +100,7 @@ public class UserController {
         ue.setPassword(CommonUtitlity.hashPassword(user.getPassword()));
         ue.setUsername(user.getUserName());
         try{
-            if(userRepository.save(ue)!=null){
+            if(userService.createUser(ue)!=null){
                 generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_CREATION_SUCCESS);
                 generalResponseModel.setResponseStatus(true);
             }else{
@@ -117,9 +118,9 @@ public class UserController {
     @MutationMapping
     public GeneralResponseModel changePassword(@Argument Long userId,@Argument String password){
         GeneralResponseModel generalResponseModel = new GeneralResponseModel();
-        UserEntity ue =  this.userRepository.getUserById(userId);
+        UserEntity ue =  this.userService.getUserById(userId);
         ue.setPassword(CommonUtitlity.hashPassword(password));
-        if(this.userRepository.save(ue)!=null){
+        if(this.userService.createUser(ue)!=null){
             generalResponseModel.setResponseMessage(ResponseMessage.RESET_PW_SUCCESS);
             generalResponseModel.setResponseStatus(true);
         }else{
@@ -132,10 +133,10 @@ public class UserController {
     @MutationMapping
     public GeneralResponseModel updateUser(@Argument UserLoginModel user){
         GeneralResponseModel generalResponseModel = new GeneralResponseModel();
-        UserEntity ue = userRepository.getUserById(user.getId());
+        UserEntity ue = userService.getUserById(user.getId());
         ue.setUsername(user.getUserName());
         ue.setEmail(user.getEmail());
-        if(userRepository.save(ue)!=null){
+        if(userService.createUser(ue)!=null){
             generalResponseModel.setResponseMessage(ResponseMessage.ACCOUNT_DATA_UPDATION_SUCCESS);
             generalResponseModel.setResponseStatus(true);
         }else{
