@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@ComponentScan(basePackages = {"com.olp.impl","com.olp.controller","com.olp.eagle"})
+@ComponentScan(basePackages = {"com.olp.impl","com.olp.controller","com.olp.service","com.olp.eagle"})
 @EntityScan(basePackages = {"com.olp.entity"})
 @EnableJpaRepositories(basePackages = "com.olp.repository")
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
